@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Drills
+      SM2
   other-modules:
       Paths_vim_gym
   hs-source-dirs:
@@ -57,5 +58,6 @@ test-suite vim-gym-test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
+    , hspec
     , vim-gym
   default-language: Haskell2010
