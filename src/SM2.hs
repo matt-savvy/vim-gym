@@ -12,6 +12,8 @@ correct newScore grade@(Grade 0 currentScore interval) =
     succReps (grade { interval = 1, score = (nextScore newScore currentScore) })
 correct newScore grade@(Grade 1 currentScore interval) =
     succReps (grade { interval = 6, score = (nextScore newScore currentScore) })
+correct newScore grade@(Grade _streak currentScore interval) =
+    succReps (grade { interval = (round ((fromIntegral interval) * newScore)), score = (nextScore newScore currentScore) })
 
 
 incorrect grade = undefined
