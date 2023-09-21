@@ -46,6 +46,7 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - vim-gym
+    - process
 
 tests:
   vim-gym-test:
