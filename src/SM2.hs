@@ -5,7 +5,7 @@ data Grade = Grade { streak :: Int, score :: Float, interval :: Int } deriving (
 applyScore :: Float -> Grade -> Grade
 applyScore newScore grade
     | newScore >= 3.0 = correct newScore grade
-    | otherwise = incorrect grade
+    | otherwise = incorrect newScore grade
 
 correct :: Float -> Grade -> Grade
 correct newScore grade@(Grade 0 currentScore interval) =
@@ -15,8 +15,9 @@ correct newScore grade@(Grade 1 currentScore interval) =
 correct newScore grade@(Grade _streak currentScore interval) =
     succReps (grade { interval = (round ((fromIntegral interval) * newScore)), score = (nextScore newScore currentScore) })
 
-
-incorrect grade = undefined
+incorrect :: Float -> Grade -> Grade
+incorrect newScore grade = grade { streak = 0, interval = 1, score = (nextScore newScore currentScore) }
+    where currentScore = score grade
 
 succReps :: Grade -> Grade
 succReps grade = grade { streak = (succ . streak) grade }
