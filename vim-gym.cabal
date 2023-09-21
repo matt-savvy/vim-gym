@@ -25,7 +25,7 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Drills
   other-modules:
       Paths_vim_gym
   hs-source-dirs:
