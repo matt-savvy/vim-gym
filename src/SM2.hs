@@ -8,12 +8,12 @@ applyScore newScore grade
     | otherwise = incorrect newScore grade
 
 correct :: Float -> Grade -> Grade
-correct newScore grade@(Grade 0 currentScore interval) =
+correct newScore grade@(Grade 0 currentScore _interval) =
     succReps (grade { interval = 1, score = (nextScore newScore currentScore) })
-correct newScore grade@(Grade 1 currentScore interval) =
+correct newScore grade@(Grade 1 currentScore _interval) =
     succReps (grade { interval = 6, score = (nextScore newScore currentScore) })
-correct newScore grade@(Grade _streak currentScore interval) =
-    succReps (grade { interval = (round ((fromIntegral interval) * newScore)), score = (nextScore newScore currentScore) })
+correct newScore grade@(Grade _streak currentScore interval') =
+    succReps (grade { interval = (round ((fromIntegral interval') * newScore)), score = (nextScore newScore currentScore) })
 
 incorrect :: Float -> Grade -> Grade
 incorrect newScore grade = grade { streak = 0, interval = 1, score = (nextScore newScore currentScore) }
