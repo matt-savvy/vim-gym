@@ -7,14 +7,18 @@ import System.Process
 import Database.SQLite.Simple (Connection, withConnection, Query, execute)
 import Database.SQLite.Simple.ToRow (toRow, ToRow)
 import GHC.Generics (Generic)
+import Data.Time
 
 data Command = AddDrill { path :: FilePath } | Review deriving (Show)
 
-data Drill = Drill { fileName :: FilePath, body :: Text.Text } deriving (Show)
-
+data Drill = Drill { drillId :: Int, fileName :: FilePath, body :: Text.Text } deriving (Show)
 instance ToRow Drill where
-    toRow (Drill fileName body) = toRow (fileName, body)
+    toRow (Drill _id fileName body) = toRow (fileName, body)
 
+data Grade = Grade { gradeId :: Int, drill :: Drill, streak :: Int, score :: Float, interval :: Int, lastReviewed :: Day }
+
+instance ToRow Grade where
+    toRow (Grade _id drill streak score interval lastReviewed) = toRow ( (drillId drill), streak, score, interval, lastReviewed)
 
 handleArgs :: [String] -> Command
 handleArgs ["add", filePath] = AddDrill { path = filePath }
