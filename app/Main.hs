@@ -1,9 +1,12 @@
 module Main (main) where
 import System.Environment (getArgs)
 import System.IO (withFile, IOMode(..), hGetContents)
+import qualified Data.Text as Text
 import System.Process
 
 data Command = AddDrill { path :: FilePath } | Review deriving (Show)
+
+data Drill = Drill { fileName :: FilePath, body :: Text.Text } deriving (Show)
 
 handleArgs :: [String] -> Command
 handleArgs ["add", filePath] = AddDrill { path = filePath }
