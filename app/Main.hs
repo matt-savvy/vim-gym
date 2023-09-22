@@ -7,7 +7,7 @@ import System.Process
 import Database.SQLite.Simple (Connection, withConnection, Query, execute)
 import Database.SQLite.Simple.ToRow (toRow, ToRow)
 import GHC.Generics (Generic)
-import Data.Time
+import Data.Time (Day(..))
 
 data Command = AddDrill { path :: FilePath } | Review deriving (Show)
 
@@ -19,6 +19,16 @@ data Grade = Grade { gradeId :: Int, drill :: Drill, streak :: Int, score :: Flo
 
 instance ToRow Grade where
     toRow (Grade _id drill streak score interval lastReviewed) = toRow ( (drillId drill), streak, score, interval, lastReviewed)
+
+initGrade :: Drill -> Grade
+initGrade drill = Grade
+    { gradeId = 0
+    , drill = drill
+    , streak = 0
+    , score = 2.5
+    , interval = 1
+    , lastReviewed = (ModifiedJulianDay 0)
+    }
 
 handleArgs :: [String] -> Command
 handleArgs ["add", filePath] = AddDrill { path = filePath }
@@ -34,11 +44,17 @@ drillFromFile filePath conn = do
     withFile filePath ReadMode processFile
     where processFile handle = do
               contents <- TIO.hGetContents handle
-              let drill = Drill { fileName = filePath, body = contents }
+              let drill = Drill { drillId = 0, fileName = filePath, body = contents }
+              let grade = initGrade drill
               execute conn insertDrillQuery drill
+              execute conn insertGradeQuery grade
 
 insertDrillQuery :: Query
 insertDrillQuery = "INSERT INTO drills (filename, body) VALUES (?, ?)"
+
+insertGradeQuery :: Query
+insertGradeQuery = "INSERT INTO grades (drill_id, streak, score, interval, last_reviewed) VALUES (?, ?, ?, ?, ?)"
+
 
 getDrill :: IO (Maybe FilePath)
 getDrill = return $ Just "tmp_lorem.txt"
