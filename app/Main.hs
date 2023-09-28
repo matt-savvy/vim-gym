@@ -86,7 +86,8 @@ review conn = do
         [] -> putStrLn "all done"
         (grade : _rest) -> do
             let drill' = drill grade
-            let filename = fileName drill'
+            let filename = "/tmp/" <> (fileName drill')
+            TIO.writeFile filename (body drill')
             callCommand $ vimCommand filename
             newScore <- getScore
             currentDay <- getCurrentDay
