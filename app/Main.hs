@@ -61,10 +61,7 @@ updateGradeQuery :: Query
 updateGradeQuery = "UPDATE grades SET streak = ?, score = ?, interval = ?, last_reviewed = ? WHERE id = ?"
 
 getDueQuery :: Query
-getDueQuery = "SELECT grades.id, drill_id, streak, score, filename, body, interval FROM grades JOIN drills ON grades.drill_id = drills.id WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now') LIMIT 1;"
-
-getDrillsQuery :: Query
-getDrillsQuery = "SELECT * FROM drills WHERE id IN (?) LIMIT 1;"
+getDueQuery = "WITH CalculatedDate AS ( SELECT *, datetime(grades.last_reviewed, '+' || grades.interval || ' day') AS calculated_date FROM grades JOIN drills ON grades.drill_id = drills.id) SELECT * FROM CalculatedDate WHERE calculated_date >= datetime('now') ORDER BY calculated_date ASC;"
 
 getGrades :: Connection -> IO [Grade]
 getGrades conn = do
@@ -94,7 +91,6 @@ review conn = do
             newScore <- getScore
             currentDay <- getCurrentDay
             let newGrade' = applySM2Grade grade (SM2.applyScore newScore (toSM2Grade grade))
-            -- newGrade' should have current day + (interval newGrade)
             let newGrade = newGrade' { lastReviewed = currentDay }
             execute conn updateGradeQuery (streak newGrade, score newGrade, interval newGrade, lastReviewed newGrade, gradeId newGrade)
 
