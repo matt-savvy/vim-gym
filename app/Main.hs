@@ -61,7 +61,7 @@ updateGradeQuery :: Query
 updateGradeQuery = "UPDATE grades SET streak = ?, score = ?, interval = ?, last_reviewed = ? WHERE id = ?"
 
 getDueQuery :: Query
-getDueQuery = "WITH CalculatedDate AS ( SELECT *, datetime(grades.last_reviewed, '+' || grades.interval || ' day') AS calculated_date FROM grades JOIN drills ON grades.drill_id = drills.id) SELECT * FROM CalculatedDate WHERE calculated_date >= datetime('now') ORDER BY calculated_date ASC;"
+getDueQuery = "SELECT grades.id, drill_id, streak, score, filename, body, interval FROM grades JOIN drills ON grades.drill_id = drills.id WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now') LIMIT 1;"
 
 getGrades :: Connection -> IO [Grade]
 getGrades conn = do
@@ -118,7 +118,6 @@ getCurrentDay = do
 
 vimCommand :: FilePath -> String
 vimCommand filePath = "/home/mattsavoia/.nix-profile/bin/vim" <> " " <> filePath
-
 
 main :: IO ()
 main = do
