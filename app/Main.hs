@@ -85,7 +85,7 @@ review :: Connection -> IO ()
 review conn = do
     grades <- getGrades conn
     case grades of
-        [] -> putStrLn "all done"
+        [] -> putStrLn "Nothing left to review."
         (grade : _rest) -> do
             let drill' = drill grade
             let filename = "/tmp/" <> (fileName drill')
