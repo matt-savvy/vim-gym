@@ -140,7 +140,7 @@ getCurrentDay = do
     return $ utctDay utcTime
 
 vimCommand :: FilePath -> String
-vimCommand filePath = "/home/mattsavoia/.nix-profile/bin/vim" <> " " <> filePath
+vimCommand filePath = "vim " <> filePath
 
 main :: IO ()
 main = do
