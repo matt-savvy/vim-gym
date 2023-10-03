@@ -107,10 +107,26 @@ applySM2Grade grade (SM2.Grade streak score interval) =
 
 getScore :: IO Float
 getScore = do
-    putStrLn "how did you do? score from 0 - 5"
+    putStrLn "how did you do? score from 0 - 5, ? for help"
     line <- getLine
-    let newScore = read line
-    return newScore
+    case line of
+        "?" -> do
+            putStrLn helpText
+            getScore
+        _line -> do
+            let newScore = read line
+            return newScore
+
+helpText :: String
+helpText = mconcat
+    [ "SCORING\n"
+    , "- 0 Total blackout, complete failure to recall the information.\n"
+    , "- 1 Incorrect response, but upon seeing the correct answer it felt familiar.\n"
+    , "- 2 Incorrect response, but upon seeing the correct answer it seemed easy to remember.\n"
+    , "- 3 Correct response, but required significant effort to recall.\n"
+    , "- 4 Correct response, after some hesitation.\n"
+    , "- 5 Correct response with perfect recall."
+    ]
 
 getCurrentDay :: IO Day
 getCurrentDay = do
