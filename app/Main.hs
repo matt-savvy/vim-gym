@@ -148,4 +148,3 @@ main = do
     let command = handleArgs args
     withConnection "vim-gym.db" $ \conn -> do
         handleCommand command conn
-        print ""
