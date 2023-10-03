@@ -93,7 +93,7 @@ review conn = do
             callCommand $ vimCommand filename
             newScore <- getScore
             currentDay <- getCurrentDay
-            let newGrade' = applySM2Grade grade (SM2.applyScore newScore (toSM2Grade grade))
+            let newGrade' = applySM2Grade grade (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade))
             let newGrade = newGrade' { lastReviewed = currentDay }
             execute conn updateGradeQuery (streak newGrade, score newGrade, interval newGrade, lastReviewed newGrade, gradeId newGrade)
 
@@ -106,7 +106,7 @@ applySM2Grade :: Grade -> SM2.Grade -> Grade
 applySM2Grade grade (SM2.Grade streak score interval) =
     grade { streak = streak, score = score, interval = interval}
 
-getScore :: IO Float
+getScore :: IO Int
 getScore = do
     putStrLn "how did you do? score from 0 - 5, ? for help"
     line <- getLine
@@ -115,7 +115,7 @@ getScore = do
             putStrLn helpText
             getScore
         _line -> do
-            let maybeScore = readMaybe line :: Maybe Float
+            let maybeScore = readMaybe line :: Maybe Int
             case maybeScore of
                 Just score ->
                     return score
