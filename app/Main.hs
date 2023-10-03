@@ -4,6 +4,7 @@ import System.Environment (getArgs)
 import System.IO (withFile, IOMode(..), hGetContents)
 import qualified Data.Text as Text
 import qualified Data.Text.IO as TIO
+import Text.Read (readMaybe)
 import System.Process
 import Database.SQLite.Simple
 import Data.Time (Day(..), getCurrentTime, utctDay)
@@ -114,8 +115,13 @@ getScore = do
             putStrLn helpText
             getScore
         _line -> do
-            let newScore = read line
-            return newScore
+            let maybeScore = readMaybe line :: Maybe Float
+            case maybeScore of
+                Just score ->
+                    return score
+                Nothing -> do
+                    putStrLn "Score not recognized."
+                    getScore
 
 helpText :: String
 helpText =
