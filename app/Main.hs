@@ -1,5 +1,6 @@
 module Main (main) where
 import qualified SM2
+import qualified UI
 import System.Environment (getArgs)
 import System.IO (withFile, IOMode(..), hGetContents)
 import qualified Data.Text as Text
@@ -96,6 +97,10 @@ review conn = do
             let newGrade' = applySM2Grade grade (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade))
             let newGrade = newGrade' { lastReviewed = currentDay }
             execute conn updateGradeQuery (streak newGrade, score newGrade, interval newGrade, lastReviewed newGrade, gradeId newGrade)
+            continue <- UI.getContinue
+            if continue
+            then (review conn)
+            else return ()
 
 
 toSM2Grade :: Grade -> SM2.Grade
