@@ -27,6 +27,7 @@ library
   exposed-modules:
       Drills
       SM2
+      UI
   other-modules:
       Paths_vim_gym
   hs-source-dirs:
