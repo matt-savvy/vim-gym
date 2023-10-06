@@ -1,6 +1,7 @@
 module Main (main) where
 import qualified SM2
 import qualified UI
+import qualified Queries
 import System.Environment (getArgs)
 import System.IO (withFile, IOMode(..), hGetContents)
 import qualified Data.Text as Text
@@ -10,7 +11,7 @@ import System.Process
 import Database.SQLite.Simple
 import Data.Time (Day(..), getCurrentTime, utctDay)
 
-data Command = AddDrill { path :: FilePath } | Review deriving (Show)
+data Command = AddDrill { path :: FilePath } | Review | Status deriving (Show)
 
 data Drill = Drill { drillId :: Int, fileName :: FilePath, body :: Text.Text } deriving (Show)
 
@@ -36,11 +37,13 @@ initGrade drill = Grade
 handleArgs :: [String] -> Command
 handleArgs ["add", filePath] = AddDrill { path = filePath }
 handleArgs ["review"] = Review
+handleArgs ["status"] = Status
 handleArgs _args = undefined
 
 handleCommand :: Command -> Connection -> IO ()
 handleCommand (AddDrill filePath) conn = drillFromFile filePath conn
 handleCommand Review conn = review conn
+handleCommand Status conn = status conn
 
 drillFromFile :: FilePath -> Connection -> IO ()
 drillFromFile filePath conn = do
@@ -146,6 +149,17 @@ getCurrentDay = do
 
 vimCommand :: FilePath -> String
 vimCommand filePath = "vim " <> filePath
+
+getDrillsDueCount :: Connection -> IO Int
+getDrillsDueCount conn = do
+    rows <- query_ conn Queries.getDueCountQuery :: IO [Only Int]
+    case rows of
+        [Only {fromOnly = count}] -> return count
+
+status :: Connection -> IO ()
+status conn = do
+    drillsDueCount <- getDrillsDueCount conn
+    putStrLn $ show drillsDueCount <> " drills due for review."
 
 main :: IO ()
 main = do
