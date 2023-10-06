@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Drills
+      Queries
       SM2
       UI
   other-modules:
