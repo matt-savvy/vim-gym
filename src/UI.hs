@@ -9,7 +9,7 @@ getContinue = do
     let continue = parseContinue input
     case continue of
         Nothing -> do
-            putStrLn "invalid input"
+            putStr "invalid input. "
             getContinue
         Just continue' -> return continue'
 
