@@ -110,6 +110,7 @@ getDrillsDueCount conn = do
     rows <- query_ conn Queries.getDueCountQuery :: IO [Only Int]
     case rows of
         [Only {fromOnly = count}] -> return count
+        _ -> return 0
 
 status :: Connection -> IO ()
 status conn = do
