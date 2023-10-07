@@ -126,7 +126,7 @@ getScore = do
           validScore score = score >= 0 && score <= 5
 
 showHelpText :: IO ()
-showHelpText = putStrLn helpText
+showHelpText = TIO.putStrLn helpText
     where helpText =
              "SCORING\n \
              \- 0 Total blackout, complete failure to recall the information.\n \
