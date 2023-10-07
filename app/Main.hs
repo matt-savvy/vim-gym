@@ -113,7 +113,7 @@ getScore = do
     line <- getLine
     case line of
         "?" -> do
-            putStrLn helpText
+            showHelpText
             getScore
         _line -> do
             let maybeScore = readMaybe line :: Maybe Int
@@ -125,15 +125,16 @@ getScore = do
               getScore
           validScore score = score >= 0 && score <= 5
 
-helpText :: String
-helpText =
-     "SCORING\n \
-     \- 0 Total blackout, complete failure to recall the information.\n \
-     \- 1 Incorrect response, but upon seeing the correct answer it felt familiar.\n \
-     \- 2 Incorrect response, but upon seeing the correct answer it seemed easy to remember.\n \
-     \- 3 Correct response, but required significant effort to recall.\n \
-     \- 4 Correct response, after some hesitation.\n \
-     \- 5 Correct response with perfect recall."
+showHelpText :: IO ()
+showHelpText = putStrLn helpText
+    where helpText =
+             "SCORING\n \
+             \- 0 Total blackout, complete failure to recall the information.\n \
+             \- 1 Incorrect response, but upon seeing the correct answer it felt familiar.\n \
+             \- 2 Incorrect response, but upon seeing the correct answer it seemed easy to remember.\n \
+             \- 3 Correct response, but required significant effort to recall.\n \
+             \- 4 Correct response, after some hesitation.\n \
+             \- 5 Correct response with perfect recall."
 
 
 getCurrentDay :: IO Day
