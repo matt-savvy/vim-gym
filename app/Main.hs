@@ -8,7 +8,7 @@ import Database.SQLite.Simple
 import qualified Queries
 import qualified SM2
 import System.Environment (getArgs)
-import System.IO (IOMode (..), hGetContents, withFile)
+import System.IO (IOMode (..), withFile)
 import System.Process
 import qualified UI
 
