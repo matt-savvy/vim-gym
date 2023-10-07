@@ -100,8 +100,7 @@ applySM2Grade grade (SM2.Grade streak score interval) =
 
 getCurrentDay :: IO Day
 getCurrentDay = do
-    utcTime <- getCurrentTime
-    return $ utctDay utcTime
+    utctDay <$> getCurrentTime
 
 vimCommand :: FilePath -> String
 vimCommand filePath = "vim " <> filePath
