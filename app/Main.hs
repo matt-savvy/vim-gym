@@ -51,27 +51,16 @@ drillFromFile filePath conn = do
     where processFile handle = do
               contents <- TIO.hGetContents handle
               let drill = Drill { drillId = 0, fileName = filePath, body = contents }
-              execute conn insertDrillQuery drill
+              execute conn Queries.insertDrillQuery drill
               rowId <- lastInsertRowId conn
               let grade = initGrade (drill {drillId = (fromIntegral rowId)})
-              execute conn insertGradeQuery grade
+              execute conn Queries.insertGradeQuery grade
               putStrLn ("Added drill for " <> filePath)
 
-insertDrillQuery :: Query
-insertDrillQuery = "INSERT INTO drills (filename, body) VALUES (?, ?)"
-
-insertGradeQuery :: Query
-insertGradeQuery = "INSERT INTO grades (drill_id, streak, score, interval, last_reviewed) VALUES (?, ?, ?, ?, ?)"
-
-updateGradeQuery :: Query
-updateGradeQuery = "UPDATE grades SET streak = ?, score = ?, interval = ?, last_reviewed = ? WHERE id = ?"
-
-getDueQuery :: Query
-getDueQuery = "SELECT grades.id, drill_id, streak, score, filename, body, interval FROM grades JOIN drills ON grades.drill_id = drills.id WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now') LIMIT 1;"
 
 getGrades :: Connection -> IO [Grade]
 getGrades conn = do
-    grades <- query_ conn getDueQuery
+    grades <- query_ conn Queries.getDueQuery
     return $ map toGrade grades
 
 toGrade :: (Int, Int, Int, Float, FilePath, Text.Text, Int) -> Grade
@@ -99,7 +88,7 @@ review conn = do
             currentDay <- getCurrentDay
             let newGrade' = applySM2Grade grade (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade))
             let newGrade = newGrade' { lastReviewed = currentDay }
-            execute conn updateGradeQuery (streak newGrade, score newGrade, interval newGrade, lastReviewed newGrade, gradeId newGrade)
+            execute conn Queries.updateGradeQuery (streak newGrade, score newGrade, interval newGrade, lastReviewed newGrade, gradeId newGrade)
             continue <- UI.getContinue
             if continue
             then (review conn)
