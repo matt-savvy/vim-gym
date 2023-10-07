@@ -118,11 +118,17 @@ getScore = do
         _line -> do
             let maybeScore = readMaybe line :: Maybe Int
             case maybeScore of
-                Just score ->
-                    return score
-                Nothing -> do
-                    putStrLn "Score not recognized."
-                    getScore
+                Just score -> if validScore score
+                              then return score
+                              else invalidScore
+                Nothing -> invalidScore
+    where validScore score
+            | score > 5 = False
+            | score < 0 = False
+            | otherwise = True
+          invalidScore = do
+              putStrLn "Score not recognized."
+              getScore
 
 helpText :: String
 helpText =
