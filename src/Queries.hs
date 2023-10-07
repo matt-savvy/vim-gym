@@ -3,8 +3,9 @@ module Queries (
     getDueQuery,
     insertDrillQuery,
     insertGradeQuery,
-    updateGradeQuery
-    ) where
+    updateGradeQuery,
+) where
+
 import Database.SQLite.Simple (Query)
 
 getDueCountQuery :: Query

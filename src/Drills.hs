@@ -1,6 +1,6 @@
-module Drills
-    ( someFunc
-    ) where
+module Drills (
+    someFunc,
+) where
 
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
