@@ -1,5 +1,6 @@
 module Main (main) where
 
+import Control.Monad (when)
 import qualified Data.Text as Text
 import qualified Data.Text.IO as TIO
 import Data.Time (Day (..), getCurrentTime, utctDay)
@@ -87,9 +88,7 @@ review conn = do
         continue [] = review' []
         continue grades' = do
             willContinue <- UI.getContinue
-            if willContinue
-                then (review' grades')
-                else return ()
+            when willContinue $ review' grades'
 
 toSM2Grade :: Grade -> SM2.Grade
 toSM2Grade grade =
