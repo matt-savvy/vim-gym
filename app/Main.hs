@@ -19,7 +19,7 @@ instance ToRow Drill where
 data Grade = Grade {gradeId :: Int, drill :: Drill, streak :: Int, score :: Float, interval :: Int, lastReviewed :: Day} deriving (Show)
 
 instance ToRow Grade where
-    toRow (Grade _id drill streak score interval lastReviewed) = toRow ((drillId drill), streak, score, interval, lastReviewed)
+    toRow (Grade _id drill streak score interval lastReviewed) = toRow (drillId drill, streak, score, interval, lastReviewed)
 
 initGrade :: Drill -> Grade
 initGrade drill =
@@ -29,7 +29,7 @@ initGrade drill =
         , streak = 0
         , score = 2.5
         , interval = 1
-        , lastReviewed = (ModifiedJulianDay 0)
+        , lastReviewed = ModifiedJulianDay 0
         }
 
 handleCommand :: UI.Command -> Connection -> IO ()
@@ -46,7 +46,7 @@ drillFromFile filePath conn = do
             let drill = Drill {drillId = 0, fileName = filePath, body = contents}
             execute conn Queries.insertDrillQuery drill
             rowId <- lastInsertRowId conn
-            let grade = initGrade (drill {drillId = (fromIntegral rowId)})
+            let grade = initGrade (drill {drillId = fromIntegral rowId})
             execute conn Queries.insertGradeQuery grade
             putStrLn ("Added drill for " <> filePath)
 
@@ -63,7 +63,7 @@ toGrade (gradeId, drillId, streak, score, filename, body, interval) =
         , score = score
         , drill = Drill {drillId = drillId, fileName = filename, body = body}
         , interval = interval
-        , lastReviewed = (ModifiedJulianDay 0)
+        , lastReviewed = ModifiedJulianDay 0
         }
 
 review :: Connection -> IO ()
@@ -74,7 +74,7 @@ review conn = do
         review' [] = putStrLn "Nothing left to review."
         review' (grade' : _rest) = do
             let drill' = drill grade'
-            let filename = "/tmp/" <> (fileName drill')
+            let filename = "/tmp/" <> fileName drill'
             TIO.writeFile filename (body drill')
             callCommand $ vimCommand filename
             newScore <- UI.getScore
