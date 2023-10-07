@@ -77,22 +77,26 @@ toGrade (gradeId, drillId, streak, score, filename, body, interval) =
 review :: Connection -> IO ()
 review conn = do
     grades <- getGrades conn
-    case grades of
-        [] -> putStrLn "Nothing left to review."
-        (grade : _rest) -> do
-            let drill' = drill grade
-            let filename = "/tmp/" <> (fileName drill')
-            TIO.writeFile filename (body drill')
-            callCommand $ vimCommand filename
-            newScore <- getScore
-            currentDay <- getCurrentDay
-            let newGrade' = applySM2Grade grade (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade))
-            let newGrade = newGrade' { lastReviewed = currentDay }
-            execute conn Queries.updateGradeQuery (streak newGrade, score newGrade, interval newGrade, lastReviewed newGrade, gradeId newGrade)
-            continue <- UI.getContinue
-            if continue
-            then (review conn)
-            else return ()
+    review' grades
+    where review' [] = putStrLn "Nothing left to review."
+          review' (grade' : _rest) = do
+              let drill' = drill grade'
+              let filename = "/tmp/" <> (fileName drill')
+              TIO.writeFile filename (body drill')
+              callCommand $ vimCommand filename
+              newScore <- getScore
+              currentDay <- getCurrentDay
+              let newGrade' = applySM2Grade grade' (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade'))
+              let newGrade = newGrade' { lastReviewed = currentDay }
+              execute conn Queries.updateGradeQuery (streak newGrade, score newGrade, interval newGrade, lastReviewed newGrade, gradeId newGrade)
+              grades' <- getGrades conn
+              continue grades'
+          continue [] = review' []
+          continue grades' = do
+              willContinue <- UI.getContinue
+              if willContinue
+              then (review' grades')
+              else return ()
 
 
 toSM2Grade :: Grade -> SM2.Grade
