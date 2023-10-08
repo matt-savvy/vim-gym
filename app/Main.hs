@@ -17,7 +17,15 @@ data Drill = Drill {drillId :: Int, drillFileName :: FilePath, drillBody :: Text
 instance ToRow Drill where
     toRow (Drill _id fileName body) = toRow (fileName, body)
 
-data Grade = Grade {gradeId :: Int, drill :: Drill, streak :: Int, score :: Float, interval :: Int, lastReviewed :: Day} deriving (Show)
+data Grade = Grade
+    { gradeId :: Int
+    , drill :: Drill
+    , streak :: Int
+    , score :: Float
+    , interval :: Int
+    , lastReviewed :: Day
+    }
+    deriving (Show)
 
 instance ToRow Grade where
     toRow (Grade _id drill streak score interval lastReviewed) = toRow (drillId drill, streak, score, interval, lastReviewed)
