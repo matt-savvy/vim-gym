@@ -65,12 +65,12 @@ getGrades conn = do
     return $ map toGrade grades
 
 toGrade :: (Int, Int, Int, Float, FilePath, Text.Text, Int) -> Grade
-toGrade (gradeId, drillId, streak, score, filename, body, interval) =
+toGrade (gradeId', drillId', streak, score, filename, body, interval) =
     Grade
-        { gradeId = gradeId
+        { gradeId = gradeId'
         , gradeStreak = streak
         , gradeScore = score
-        , gradeDrill = Drill {drillId = drillId, drillFileName = filename, drillBody = body}
+        , gradeDrill = Drill {drillId = drillId', drillFileName = filename, drillBody = body}
         , gradeInterval = interval
         , gradeLastReviewed = ModifiedJulianDay 0
         }
