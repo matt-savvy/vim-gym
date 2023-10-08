@@ -19,11 +19,11 @@ instance ToRow Drill where
 
 data Grade = Grade
     { gradeId :: Int
-    , drill :: Drill
-    , streak :: Int
-    , score :: Float
-    , interval :: Int
-    , lastReviewed :: Day
+    , gradeDrill :: Drill
+    , gradeStreak :: Int
+    , gradeScore :: Float
+    , gradeInterval :: Int
+    , gradeLastReviewed :: Day
     }
     deriving (Show)
 
@@ -34,11 +34,11 @@ initGrade :: Drill -> Grade
 initGrade drill =
     Grade
         { gradeId = 0
-        , drill = drill
-        , streak = 0
-        , score = 2.5
-        , interval = 1
-        , lastReviewed = ModifiedJulianDay 0
+        , gradeDrill = drill
+        , gradeStreak = 0
+        , gradeScore = 2.5
+        , gradeInterval = 1
+        , gradeLastReviewed = ModifiedJulianDay 0
         }
 
 handleCommand :: UI.Command -> Connection -> IO ()
@@ -68,11 +68,11 @@ toGrade :: (Int, Int, Int, Float, FilePath, Text.Text, Int) -> Grade
 toGrade (gradeId, drillId, streak, score, filename, body, interval) =
     Grade
         { gradeId = gradeId
-        , streak = streak
-        , score = score
-        , drill = Drill {drillId = drillId, drillFileName = filename, drillBody = body}
-        , interval = interval
-        , lastReviewed = ModifiedJulianDay 0
+        , gradeStreak = streak
+        , gradeScore = score
+        , gradeDrill = Drill {drillId = drillId, drillFileName = filename, drillBody = body}
+        , gradeInterval = interval
+        , gradeLastReviewed = ModifiedJulianDay 0
         }
 
 review :: Connection -> IO ()
@@ -82,15 +82,15 @@ review conn = do
     where
         review' [] = putStrLn "Nothing left to review."
         review' (grade' : _rest) = do
-            let drill' = drill grade'
+            let drill' = gradeDrill grade'
             let filename = "/tmp/" <> drillFileName drill'
             TIO.writeFile filename (drillBody drill')
             callCommand $ vimCommand filename
             newScore <- UI.getScore
             currentDay <- getCurrentDay
             let newGrade' = applySM2Grade grade' (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade'))
-            let newGrade = newGrade' {lastReviewed = currentDay}
-            execute conn Queries.updateGradeQuery (streak newGrade, score newGrade, interval newGrade, lastReviewed newGrade, gradeId newGrade)
+            let newGrade = newGrade' {gradeLastReviewed = currentDay}
+            execute conn Queries.updateGradeQuery (gradeStreak newGrade, gradeScore newGrade, gradeInterval newGrade, gradeLastReviewed newGrade, gradeId newGrade)
             grades' <- getGrades conn
             continue grades'
         continue [] = review' []
@@ -100,11 +100,11 @@ review conn = do
 
 toSM2Grade :: Grade -> SM2.Grade
 toSM2Grade grade =
-    SM2.Grade (streak grade) (score grade) (interval grade)
+    SM2.Grade (gradeStreak grade) (gradeScore grade) (gradeInterval grade)
 
 applySM2Grade :: Grade -> SM2.Grade -> Grade
 applySM2Grade grade (SM2.Grade streak score interval) =
-    grade {streak = streak, score = score, interval = interval}
+    grade {gradeStreak = streak, gradeScore = score, gradeInterval = interval}
 
 getCurrentDay :: IO Day
 getCurrentDay = do
