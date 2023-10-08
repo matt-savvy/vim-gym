@@ -12,7 +12,7 @@ import System.IO (IOMode (..), withFile)
 import System.Process
 import qualified UI
 
-data Drill = Drill {drillId :: Int, fileName :: FilePath, body :: Text.Text} deriving (Show)
+data Drill = Drill {drillId :: Int, drillFileName :: FilePath, drillBody :: Text.Text} deriving (Show)
 
 instance ToRow Drill where
     toRow (Drill _id fileName body) = toRow (fileName, body)
@@ -44,7 +44,7 @@ drillFromFile filePath conn = do
     where
         processFile handle = do
             contents <- TIO.hGetContents handle
-            let drill = Drill {drillId = 0, fileName = filePath, body = contents}
+            let drill = Drill {drillId = 0, drillFileName = filePath, drillBody = contents}
             execute conn Queries.insertDrillQuery drill
             rowId <- lastInsertRowId conn
             let grade = initGrade (drill {drillId = fromIntegral rowId})
@@ -62,7 +62,7 @@ toGrade (gradeId, drillId, streak, score, filename, body, interval) =
         { gradeId = gradeId
         , streak = streak
         , score = score
-        , drill = Drill {drillId = drillId, fileName = filename, body = body}
+        , drill = Drill {drillId = drillId, drillFileName = filename, drillBody = body}
         , interval = interval
         , lastReviewed = ModifiedJulianDay 0
         }
@@ -75,8 +75,8 @@ review conn = do
         review' [] = putStrLn "Nothing left to review."
         review' (grade' : _rest) = do
             let drill' = drill grade'
-            let filename = "/tmp/" <> fileName drill'
-            TIO.writeFile filename (body drill')
+            let filename = "/tmp/" <> drillFileName drill'
+            TIO.writeFile filename (drillBody drill')
             callCommand $ vimCommand filename
             newScore <- UI.getScore
             currentDay <- getCurrentDay
