@@ -123,7 +123,7 @@ getDrillsDueCount conn = do
 status :: Connection -> IO ()
 status conn = do
     drillsDueCount <- getDrillsDueCount conn
-    putStrLn $ "Drills due for review: " <> show drillsDueCount
+    UI.showStatus drillsDueCount
 
 main :: IO ()
 main = do

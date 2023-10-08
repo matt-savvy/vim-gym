@@ -1,6 +1,6 @@
-module UI (getContinue, getScore, Command (..), handleArgs) where
+module UI (getContinue, getScore, Command (..), handleArgs, showStatus) where
 
-import Data.Text (Text, toLower)
+import Data.Text (Text, pack, toLower)
 import qualified Data.Text.IO as TIO
 import Text.Read (readMaybe)
 
@@ -53,6 +53,9 @@ showHelpText = TIO.putStrLn helpText
             \- 3 Correct response, but required significant effort to recall.\n \
             \- 4 Correct response, after some hesitation.\n \
             \- 5 Correct response with perfect recall."
+
+showStatus :: Int -> IO ()
+showStatus n = TIO.putStrLn $ "Drills due for review: " <> (pack . show) n
 
 data Command = AddDrill {path :: FilePath} | Review | Status deriving (Show)
 
