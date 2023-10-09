@@ -47,24 +47,31 @@ initGrade drill =
         }
 
 handleCommand :: UI.Command -> Connection -> IO ()
-handleCommand (UI.AddDrill (filePath : _rest)) conn = drillFromFile filePath conn
+handleCommand (UI.AddDrill []) _conn = undefined
+handleCommand (UI.AddDrill filePaths) conn = addDrill filePaths conn
 handleCommand UI.Review conn = review conn
 handleCommand UI.Status conn = status conn
 
-drillFromFile :: FilePath -> Connection -> IO ()
-drillFromFile filePath conn = do
-    withFile filePath ReadMode processFile
+addDrill :: [FilePath] -> Connection -> IO ()
+addDrill filePaths conn = do
+    let drill = Drill {drillId = 0, drillFileName = "", drillBody = ""}
+    execute conn Queries.insertDrillQuery drill
+    drillRowId <- lastInsertRowId conn
+    let drillId' = fromIntegral drillRowId
+    mapM_ (addFile drillId') filePaths
+    let grade = initGrade (drill {drillId = drillId'})
+    execute conn Queries.insertGradeQuery grade
+    putStrLn ("Added drill for " <> unwords filePaths)
     where
-        processFile handle = do
-            contents <- TIO.hGetContents handle
-            let drill = Drill {drillId = 0, drillFileName = filePath, drillBody = contents}
-            execute conn Queries.insertDrillQuery drill
-            rowId <- lastInsertRowId conn
-            let file = File {fileDrillId = fromIntegral rowId, fileName = filePath, fileBody = contents}
-            execute conn Queries.insertFileQuery file
-            let grade = initGrade (drill {drillId = fromIntegral rowId})
-            execute conn Queries.insertGradeQuery grade
-            putStrLn ("Added drill for " <> filePath)
+        addFile drillId' filePath =
+            withFile
+                filePath
+                ReadMode
+                ( \handle -> do
+                    contents <- TIO.hGetContents handle
+                    let file = File {fileDrillId = drillId', fileName = filePath, fileBody = contents}
+                    execute conn Queries.insertFileQuery file
+                )
 
 getGrades :: Connection -> IO [Grade]
 getGrades conn = do
