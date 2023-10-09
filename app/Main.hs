@@ -13,9 +13,13 @@ import System.Process
 import qualified UI
 
 data Drill = Drill {drillId :: Int, drillFileName :: FilePath, drillBody :: Text.Text} deriving (Show)
+data File = File {fileDrillId :: Int, fileName :: FilePath, fileBody :: Text.Text} deriving (Show)
 
 instance ToRow Drill where
     toRow (Drill _id fileName body) = toRow (fileName, body)
+
+instance ToRow File where
+    toRow (File drillId' filename body) = toRow (drillId', filename, body)
 
 data Grade = Grade
     { gradeId :: Int
