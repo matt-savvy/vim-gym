@@ -17,7 +17,7 @@ data File = File {fileDrillId :: Int, fileName :: FilePath, fileBody :: Text.Tex
 instance ToRow File where
     toRow (File drillId' filename body) = toRow (drillId', filename, body)
 
-data Grade = Grade
+data Drill = Grade
     { gradeId :: Int
     , gradeStreak :: Int
     , gradeScore :: Float
@@ -26,10 +26,10 @@ data Grade = Grade
     }
     deriving (Show)
 
-instance ToRow Grade where
+instance ToRow Drill where
     toRow (Grade _id streak score interval lastReviewed) = toRow (streak, score, interval, lastReviewed)
 
-initGrade :: Grade
+initGrade :: Drill
 initGrade =
     Grade
         { gradeId = 0
@@ -64,7 +64,7 @@ addDrill filePaths conn = do
                     execute conn Queries.insertFileQuery file
                 )
 
-getGrades :: Connection -> IO [Grade]
+getGrades :: Connection -> IO [Drill]
 getGrades conn = do
     grades <- query_ conn Queries.getDueQuery
     return $ map toGrade grades
@@ -74,7 +74,7 @@ getFiles conn gradeId' = do
     fileRows <- query conn Queries.getFilesQuery (Only gradeId')
     return $ map toFile fileRows
 
-toGrade :: (Int, Int, Float, Int) -> Grade
+toGrade :: (Int, Int, Float, Int) -> Drill
 toGrade (gradeId', streak, score, interval) =
     Grade
         { gradeId = gradeId'
@@ -123,11 +123,11 @@ review conn = do
 tmpDir :: String
 tmpDir = "/tmp/vim-gym/"
 
-toSM2Grade :: Grade -> SM2.Grade
+toSM2Grade :: Drill -> SM2.Grade
 toSM2Grade grade =
     SM2.Grade (gradeStreak grade) (gradeScore grade) (gradeInterval grade)
 
-applySM2Grade :: Grade -> SM2.Grade -> Grade
+applySM2Grade :: Drill -> SM2.Grade -> Drill
 applySM2Grade grade (SM2.Grade streak score interval) =
     grade {gradeStreak = streak, gradeScore = score, gradeInterval = interval}
 
