@@ -17,7 +17,7 @@ data File = File {fileDrillId :: Int, fileName :: FilePath, fileBody :: Text.Tex
 instance ToRow File where
     toRow (File drillId' filename body) = toRow (drillId', filename, body)
 
-data Drill = Grade
+data Drill = Drill
     { gradeId :: Int
     , gradeStreak :: Int
     , gradeScore :: Float
@@ -27,11 +27,11 @@ data Drill = Grade
     deriving (Show)
 
 instance ToRow Drill where
-    toRow (Grade _id streak score interval lastReviewed) = toRow (streak, score, interval, lastReviewed)
+    toRow (Drill _id streak score interval lastReviewed) = toRow (streak, score, interval, lastReviewed)
 
 initGrade :: Drill
 initGrade =
-    Grade
+    Drill
         { gradeId = 0
         , gradeStreak = 0
         , gradeScore = 2.5
@@ -76,7 +76,7 @@ getFiles conn gradeId' = do
 
 toGrade :: (Int, Int, Float, Int) -> Drill
 toGrade (gradeId', streak, score, interval) =
-    Grade
+    Drill
         { gradeId = gradeId'
         , gradeStreak = streak
         , gradeScore = score
