@@ -17,5 +17,5 @@ CREATE TABLE files (
     filename TEXT,
     body TEXT,
     drill_id INTEGER,
-    FOREIGN KEY(drill_id) REFERENCES drills(id)
+    FOREIGN KEY(drill_id) REFERENCES grades(id)
 );
