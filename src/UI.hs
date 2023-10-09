@@ -57,10 +57,10 @@ showHelpText = TIO.putStrLn helpText
 showStatus :: Int -> IO ()
 showStatus n = TIO.putStrLn $ "Drills due for review: " <> (pack . show) n
 
-data Command = AddDrill FilePath | Review | Status deriving (Show)
+data Command = AddDrill [FilePath] | Review | Status deriving (Show)
 
 handleArgs :: [String] -> Command
-handleArgs ["add", filePath] = AddDrill filePath
+handleArgs ("add" : filePaths) = AddDrill filePaths
 handleArgs ["review"] = Review
 handleArgs ["status"] = Status
 handleArgs _args = undefined

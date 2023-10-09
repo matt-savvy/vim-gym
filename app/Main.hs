@@ -47,7 +47,7 @@ initGrade drill =
         }
 
 handleCommand :: UI.Command -> Connection -> IO ()
-handleCommand (UI.AddDrill filePath) conn = drillFromFile filePath conn
+handleCommand (UI.AddDrill (filePath : _rest)) conn = drillFromFile filePath conn
 handleCommand UI.Review conn = review conn
 handleCommand UI.Status conn = status conn
 
