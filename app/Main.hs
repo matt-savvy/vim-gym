@@ -48,7 +48,7 @@ handleCommand UI.Status conn = status conn
 addDrill :: [FilePath] -> Connection -> IO ()
 addDrill filePaths conn = do
     let grade = initGrade
-    execute conn Queries.insertGradeQuery grade
+    execute conn Queries.insertDrillQuery grade
     drillRowId <- lastInsertRowId conn
     let drillId' = fromIntegral drillRowId
     mapM_ (addFile drillId') filePaths
@@ -112,7 +112,7 @@ review conn = do
             currentDay <- getCurrentDay
             let newGrade' = applySM2Grade grade' (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade'))
             let newGrade = newGrade' {gradeLastReviewed = currentDay}
-            execute conn Queries.updateGradeQuery (gradeStreak newGrade, gradeScore newGrade, gradeInterval newGrade, gradeLastReviewed newGrade, gradeId newGrade)
+            execute conn Queries.updateDrillQuery (gradeStreak newGrade, gradeScore newGrade, gradeInterval newGrade, gradeLastReviewed newGrade, gradeId newGrade)
             grades' <- getGrades conn
             continue grades'
         continue [] = review' []

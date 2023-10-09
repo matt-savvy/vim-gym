@@ -3,26 +3,26 @@ module Queries (
     getDueQuery,
     getFilesQuery,
     insertFileQuery,
-    insertGradeQuery,
-    updateGradeQuery,
+    insertDrillQuery,
+    updateDrillQuery,
 ) where
 
 import Database.SQLite.Simple (Query)
 
 getDueCountQuery :: Query
-getDueCountQuery = "SELECT COUNT (id) FROM grades WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now');"
+getDueCountQuery = "SELECT COUNT (id) FROM drills WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now');"
 
 getDueQuery :: Query
-getDueQuery = "SELECT id, streak, score, interval FROM grades WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now') LIMIT 1;"
+getDueQuery = "SELECT id, streak, score, interval FROM drills WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now') LIMIT 1;"
 
 getFilesQuery :: Query
 getFilesQuery = "SELECT drill_id, filename, body FROM files WHERE drill_id = (?);"
 
-insertGradeQuery :: Query
-insertGradeQuery = "INSERT INTO grades (streak, score, interval, last_reviewed) VALUES (?, ?, ?, ?)"
+insertDrillQuery :: Query
+insertDrillQuery = "INSERT INTO drills (streak, score, interval, last_reviewed) VALUES (?, ?, ?, ?)"
 
 insertFileQuery :: Query
 insertFileQuery = "INSERT INTO files (drill_id, filename, body) VALUES (?, ?, ?)"
 
-updateGradeQuery :: Query
-updateGradeQuery = "UPDATE grades SET streak = ?, score = ?, interval = ?, last_reviewed = ? WHERE id = ?"
+updateDrillQuery :: Query
+updateDrillQuery = "UPDATE drills SET streak = ?, score = ?, interval = ?, last_reviewed = ? WHERE id = ?"
