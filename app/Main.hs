@@ -7,6 +7,7 @@ import Data.Time (Day (..), getCurrentTime, utctDay)
 import Database.SQLite.Simple
 import qualified Queries
 import qualified SM2
+import System.Directory (createDirectory, removeDirectoryRecursive)
 import System.Environment (getArgs)
 import System.IO (IOMode (..), withFile)
 import System.Process
@@ -97,9 +98,11 @@ review conn = do
         review' [] = putStrLn "Nothing left to review."
         review' (grade' : _rest) = do
             files <- getFiles conn (gradeId grade')
-            let filename = "/tmp/" <> fileName (head files)
+            createDirectory tmpDir
+            let filename = tmpDir <> fileName (head files)
             TIO.writeFile filename (fileBody $ head files)
             callCommand $ vimCommand filename
+            removeDirectoryRecursive tmpDir
             newScore <- UI.getScore
             currentDay <- getCurrentDay
             let newGrade' = applySM2Grade grade' (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade'))
@@ -111,6 +114,9 @@ review conn = do
         continue grades' = do
             willContinue <- UI.getContinue
             when willContinue $ review' grades'
+
+tmpDir :: String
+tmpDir = "/tmp/vim-gym/"
 
 toSM2Grade :: Grade -> SM2.Grade
 toSM2Grade grade =
