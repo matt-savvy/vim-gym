@@ -2,7 +2,6 @@ module Queries (
     getDueCountQuery,
     getDueQuery,
     getFilesQuery,
-    insertDrillQuery,
     insertFileQuery,
     insertGradeQuery,
     updateGradeQuery,
@@ -18,9 +17,6 @@ getDueQuery = "SELECT id, streak, score, interval FROM grades WHERE datetime(las
 
 getFilesQuery :: Query
 getFilesQuery = "SELECT drill_id, filename, body FROM files WHERE drill_id = (?);"
-
-insertDrillQuery :: Query
-insertDrillQuery = "INSERT INTO drills (filename, body) VALUES (?, ?)"
 
 insertGradeQuery :: Query
 insertGradeQuery = "INSERT INTO grades (streak, score, interval, last_reviewed) VALUES (?, ?, ?, ?)"
