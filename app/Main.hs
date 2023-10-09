@@ -29,8 +29,8 @@ data Drill = Drill
 instance ToRow Drill where
     toRow (Drill _id streak score interval lastReviewed) = toRow (streak, score, interval, lastReviewed)
 
-initGrade :: Drill
-initGrade =
+initDrill :: Drill
+initDrill =
     Drill
         { drillId = 0
         , drillStreak = 0
@@ -47,7 +47,7 @@ handleCommand UI.Status conn = status conn
 
 addDrill :: [FilePath] -> Connection -> IO ()
 addDrill filePaths conn = do
-    let grade = initGrade
+    let grade = initDrill
     execute conn Queries.insertDrillQuery grade
     drillRowId <- lastInsertRowId conn
     let drillId' = fromIntegral drillRowId
