@@ -70,6 +70,11 @@ getGrades conn = do
     grades <- query_ conn Queries.getDueQuery
     return $ map toGrade grades
 
+getFiles :: Connection -> Int -> IO [File]
+getFiles conn gradeId' = do
+    fileRows <- query conn Queries.getFilesQuery (Only gradeId')
+    return $ map toFile fileRows
+
 toGrade :: (Int, Int, Int, Float, FilePath, Text.Text, Int) -> Grade
 toGrade (gradeId', drillId', streak, score, filename, body, interval) =
     Grade
@@ -81,6 +86,9 @@ toGrade (gradeId', drillId', streak, score, filename, body, interval) =
         , gradeLastReviewed = ModifiedJulianDay 0
         }
 
+toFile :: (Int, FilePath, Text.Text) -> File
+toFile (drillId', name, body) = File {fileDrillId = drillId', fileName = name, fileBody = body}
+
 review :: Connection -> IO ()
 review conn = do
     grades <- getGrades conn
@@ -88,9 +96,9 @@ review conn = do
     where
         review' [] = putStrLn "Nothing left to review."
         review' (grade' : _rest) = do
-            let drill' = gradeDrill grade'
-            let filename = "/tmp/" <> drillFileName drill'
-            TIO.writeFile filename (drillBody drill')
+            files <- getFiles conn (gradeId grade')
+            let filename = "/tmp/" <> fileName (head files)
+            TIO.writeFile filename (fileBody $ head files)
             callCommand $ vimCommand filename
             newScore <- UI.getScore
             currentDay <- getCurrentDay
