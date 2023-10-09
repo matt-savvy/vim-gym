@@ -64,20 +64,20 @@ addDrill filePaths conn = do
                     execute conn Queries.insertFileQuery file
                 )
 
-getGrades :: Connection -> IO [Drill]
-getGrades conn = do
-    grades <- query_ conn Queries.getDueQuery
-    return $ map toGrade grades
+getDue :: Connection -> IO [Drill]
+getDue conn = do
+    drillRows <- query_ conn Queries.getDueQuery
+    return $ map toDrill drillRows
 
 getFiles :: Connection -> Int -> IO [File]
 getFiles conn gradeId' = do
     fileRows <- query conn Queries.getFilesQuery (Only gradeId')
     return $ map toFile fileRows
 
-toGrade :: (Int, Int, Float, Int) -> Drill
-toGrade (gradeId', streak, score, interval) =
+toDrill :: (Int, Int, Float, Int) -> Drill
+toDrill (id', streak, score, interval) =
     Drill
-        { drillId = gradeId'
+        { drillId = id'
         , drillStreak = streak
         , drillScore = score
         , drillInterval = interval
@@ -89,8 +89,8 @@ toFile (drillId', name, body) = File {fileDrillId = drillId', fileName = name, f
 
 review :: Connection -> IO ()
 review conn = do
-    grades <- getGrades conn
-    review' grades
+    drills <- getDue conn
+    review' drills
     where
         reviewFiles [] = return ()
         reviewFiles files = do
@@ -105,31 +105,31 @@ review conn = do
             callCommand $ vimCommand filenames
             removeDirectoryRecursive tmpDir
         review' [] = putStrLn "Nothing left to review."
-        review' (grade' : _rest) = do
-            files <- getFiles conn (drillId grade')
+        review' (drill : _rest) = do
+            files <- getFiles conn (drillId drill)
             reviewFiles files
             newScore <- UI.getScore
             currentDay <- getCurrentDay
-            let newGrade' = applySM2Grade grade' (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade'))
-            let newGrade = newGrade' {drillLastReviewed = currentDay}
-            execute conn Queries.updateDrillQuery (drillStreak newGrade, drillScore newGrade, drillInterval newGrade, drillLastReviewed newGrade, drillId newGrade)
-            grades' <- getGrades conn
-            continue grades'
+            let newDrill' = applySM2Grade drill (SM2.applyScore (fromIntegral newScore) (toSM2Grade drill))
+            let newDrill = newDrill' {drillLastReviewed = currentDay}
+            execute conn Queries.updateDrillQuery (drillStreak newDrill, drillScore newDrill, drillInterval newDrill, drillLastReviewed newDrill, drillId newDrill)
+            drills <- getDue conn
+            continue drills
         continue [] = review' []
-        continue grades' = do
+        continue drills = do
             willContinue <- UI.getContinue
-            when willContinue $ review' grades'
+            when willContinue $ review' drills
 
 tmpDir :: String
 tmpDir = "/tmp/vim-gym/"
 
 toSM2Grade :: Drill -> SM2.Grade
-toSM2Grade grade =
-    SM2.Grade (drillStreak grade) (drillScore grade) (drillInterval grade)
+toSM2Grade drill =
+    SM2.Grade (drillStreak drill) (drillScore drill) (drillInterval drill)
 
 applySM2Grade :: Drill -> SM2.Grade -> Drill
-applySM2Grade grade (SM2.Grade streak score interval) =
-    grade {drillStreak = streak, drillScore = score, drillInterval = interval}
+applySM2Grade drill (SM2.Grade streak score interval) =
+    drill {drillStreak = streak, drillScore = score, drillInterval = interval}
 
 getCurrentDay :: IO Day
 getCurrentDay = do
