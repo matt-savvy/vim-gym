@@ -5,7 +5,6 @@ CREATE TABLE drills (
 
 CREATE TABLE grades (
     id INTEGER PRIMARY KEY,
-    drill_id INTEGER,
     streak INTEGER,
     score REAL,
     interval INTEGER,

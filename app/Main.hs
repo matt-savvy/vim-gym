@@ -24,7 +24,6 @@ instance ToRow File where
 
 data Grade = Grade
     { gradeId :: Int
-    , gradeDrill :: Drill
     , gradeStreak :: Int
     , gradeScore :: Float
     , gradeInterval :: Int
@@ -33,13 +32,12 @@ data Grade = Grade
     deriving (Show)
 
 instance ToRow Grade where
-    toRow (Grade _id drill streak score interval lastReviewed) = toRow (drillId drill, streak, score, interval, lastReviewed)
+    toRow (Grade _id streak score interval lastReviewed) = toRow (streak, score, interval, lastReviewed)
 
-initGrade :: Drill -> Grade
-initGrade drill =
+initGrade :: Grade
+initGrade =
     Grade
         { gradeId = 0
-        , gradeDrill = drill
         , gradeStreak = 0
         , gradeScore = 2.5
         , gradeInterval = 1
@@ -54,13 +52,11 @@ handleCommand UI.Status conn = status conn
 
 addDrill :: [FilePath] -> Connection -> IO ()
 addDrill filePaths conn = do
-    let drill = Drill {drillId = 0, drillFileName = "", drillBody = ""}
-    execute conn Queries.insertDrillQuery drill
+    let grade = initGrade
+    execute conn Queries.insertGradeQuery grade
     drillRowId <- lastInsertRowId conn
     let drillId' = fromIntegral drillRowId
     mapM_ (addFile drillId') filePaths
-    let grade = initGrade (drill {drillId = drillId'})
-    execute conn Queries.insertGradeQuery grade
     putStrLn ("Added drill for " <> unwords filePaths)
     where
         addFile drillId' filePath =
@@ -83,13 +79,12 @@ getFiles conn gradeId' = do
     fileRows <- query conn Queries.getFilesQuery (Only gradeId')
     return $ map toFile fileRows
 
-toGrade :: (Int, Int, Int, Float, FilePath, Text.Text, Int) -> Grade
-toGrade (gradeId', drillId', streak, score, filename, body, interval) =
+toGrade :: (Int, Int, Float, Int) -> Grade
+toGrade (gradeId', streak, score, interval) =
     Grade
         { gradeId = gradeId'
         , gradeStreak = streak
         , gradeScore = score
-        , gradeDrill = Drill {drillId = drillId', drillFileName = filename, drillBody = body}
         , gradeInterval = interval
         , gradeLastReviewed = ModifiedJulianDay 0
         }
