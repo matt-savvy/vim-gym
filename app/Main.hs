@@ -95,14 +95,22 @@ review conn = do
     grades <- getGrades conn
     review' grades
     where
+        reviewFiles [] = return ()
+        reviewFiles files = do
+            createDirectory tmpDir
+            mapM_
+                ( \file -> do
+                    let filename = tmpDir <> fileName file
+                    TIO.writeFile filename (fileBody file)
+                )
+                files
+            let filenames = map (\file -> tmpDir <> fileName file) files
+            callCommand $ vimCommand filenames
+            removeDirectoryRecursive tmpDir
         review' [] = putStrLn "Nothing left to review."
         review' (grade' : _rest) = do
             files <- getFiles conn (gradeId grade')
-            createDirectory tmpDir
-            let filename = tmpDir <> fileName (head files)
-            TIO.writeFile filename (fileBody $ head files)
-            callCommand $ vimCommand filename
-            removeDirectoryRecursive tmpDir
+            reviewFiles files
             newScore <- UI.getScore
             currentDay <- getCurrentDay
             let newGrade' = applySM2Grade grade' (SM2.applyScore (fromIntegral newScore) (toSM2Grade grade'))
@@ -130,8 +138,8 @@ getCurrentDay :: IO Day
 getCurrentDay = do
     utctDay <$> getCurrentTime
 
-vimCommand :: FilePath -> String
-vimCommand filePath = "vim " <> filePath
+vimCommand :: [FilePath] -> String
+vimCommand filePaths = "vim " <> unwords filePaths
 
 getDrillsDueCount :: Connection -> IO Int
 getDrillsDueCount conn = do
