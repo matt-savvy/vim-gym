@@ -1,0 +1,3 @@
+- Open the q: menu on purpose.
+- Open it while writing in command mode already.
+

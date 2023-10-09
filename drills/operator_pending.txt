@@ -1,0 +1,8 @@
+#
+# While in insert mode, use operator pending mode.
+#
+# Type the phrase: I am typing a phrase.
+# Then use operator pending to go back to the start of the line
+# And prepend the phrase: Before you know it,
+# to create the following line:
+# Before you know it, I am typing a phrase.
