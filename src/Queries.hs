@@ -2,6 +2,7 @@ module Queries (
     getDueCountQuery,
     getDueQuery,
     insertDrillQuery,
+    insertFileQuery,
     insertGradeQuery,
     updateGradeQuery,
 ) where
@@ -19,6 +20,9 @@ insertDrillQuery = "INSERT INTO drills (filename, body) VALUES (?, ?)"
 
 insertGradeQuery :: Query
 insertGradeQuery = "INSERT INTO grades (drill_id, streak, score, interval, last_reviewed) VALUES (?, ?, ?, ?, ?)"
+
+insertFileQuery :: Query
+insertFileQuery = "INSERT INTO files (drill_id, filename, body) VALUES (?, ?, ?)"
 
 updateGradeQuery :: Query
 updateGradeQuery = "UPDATE grades SET streak = ?, score = ?, interval = ?, last_reviewed = ? WHERE id = ?"
