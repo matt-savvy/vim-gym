@@ -59,6 +59,8 @@ drillFromFile filePath conn = do
             let drill = Drill {drillId = 0, drillFileName = filePath, drillBody = contents}
             execute conn Queries.insertDrillQuery drill
             rowId <- lastInsertRowId conn
+            let file = File {fileDrillId = fromIntegral rowId, fileName = filePath, fileBody = contents}
+            execute conn Queries.insertFileQuery file
             let grade = initGrade (drill {drillId = fromIntegral rowId})
             execute conn Queries.insertGradeQuery grade
             putStrLn ("Added drill for " <> filePath)
