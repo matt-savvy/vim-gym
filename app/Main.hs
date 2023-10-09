@@ -47,8 +47,8 @@ handleCommand UI.Status conn = status conn
 
 addDrill :: [FilePath] -> Connection -> IO ()
 addDrill filePaths conn = do
-    let grade = initDrill
-    execute conn Queries.insertDrillQuery grade
+    let drill = initDrill
+    execute conn Queries.insertDrillQuery drill
     drillRowId <- lastInsertRowId conn
     let drillId' = fromIntegral drillRowId
     mapM_ (addFile drillId') filePaths
@@ -70,8 +70,8 @@ getDue conn = do
     return $ map toDrill drillRows
 
 getFiles :: Connection -> Int -> IO [File]
-getFiles conn gradeId' = do
-    fileRows <- query conn Queries.getFilesQuery (Only gradeId')
+getFiles conn drillId' = do
+    fileRows <- query conn Queries.getFilesQuery (Only drillId')
     return $ map toFile fileRows
 
 toDrill :: (Int, Int, Float, Int) -> Drill
