@@ -37,7 +37,7 @@ const baz = foo + bar
 
 Add the drill.
 ```
-vim-gim-exe add foo_bar.js
+vim-gym-exe add foo_bar.js
 ```
 
 You can delete or edit your drill file.
@@ -47,7 +47,7 @@ You can delete or edit your drill file.
 Run the review command. It will select the first drill scheduled for practice.
 
 ```
-vim-gim-exe review
+vim-gym-exe review
 ```
 
 This will open the drill in vim. Make your edits and then exit.
