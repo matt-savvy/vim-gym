@@ -17,6 +17,8 @@ sqlite3 vim-gym.db < init_db.sql
 stack build --copy-bins
 ```
 
+You might need to add the stack build dir to your path. See output of `stack build` above.
+
 ## Usage
 
 ### Add a drill
@@ -37,8 +39,6 @@ Add the drill.
 ```
 vim-gim-exe add foo_bar.js
 ```
-
-You might need to add the stack build dir to your path. See output of `stack build` (above).
 
 You can delete or edit your drill file.
 
