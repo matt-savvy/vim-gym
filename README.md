@@ -40,7 +40,12 @@ Add the drill.
 vim-gym-exe add foo_bar.js
 ```
 
-You can delete or edit your drill file.
+A drill can be spread across multiple files.
+```
+vim-gym-exe add foo.js bar.js baz.js
+```
+
+You can delete or edit your drill file(s).
 
 ### Review
 
