@@ -1,0 +1,13 @@
+#
+# For all files, add another field below title called jobs, which is a list
+# that contains their current title
+# e.g.
+# id: 0
+# name: Al Pha
+# title: Videographer
+# jobs:
+#   - Videographer
+#
+id: 1
+name: Alice
+title: Alphabetizer
