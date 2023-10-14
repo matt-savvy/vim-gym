@@ -5,6 +5,7 @@ import qualified Data.Text as Text
 import qualified Data.Text.IO as TIO
 import Data.Time (Day (..), getCurrentTime, utctDay)
 import Database.SQLite.Simple
+import qualified FilePathHelper
 import qualified Queries
 import qualified SM2
 import System.Directory (createDirectoryIfMissing, removeDirectoryRecursive)
@@ -100,8 +101,10 @@ review conn = do
             createTmpDir
             mapM_
                 ( \file -> do
-                    let filename = tmpDir <> fileName file
-                    TIO.writeFile filename (fileBody file)
+                    let fullPath = tmpDir <> fileName file
+                    let (dirPath, _filename) = FilePathHelper.split fullPath
+                    createDirectoryIfMissing True dirPath
+                    TIO.writeFile fullPath (fileBody file)
                 )
                 files
             let filenames = map (\file -> tmpDir <> fileName file) files
