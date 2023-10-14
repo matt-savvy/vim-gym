@@ -7,7 +7,7 @@ import Data.Time (Day (..), getCurrentTime, utctDay)
 import Database.SQLite.Simple
 import qualified Queries
 import qualified SM2
-import System.Directory (createDirectory, removeDirectoryRecursive)
+import System.Directory (createDirectoryIfMissing, removeDirectoryRecursive)
 import System.Environment (getArgs)
 import System.IO (IOMode (..), withFile)
 import System.Process
@@ -87,6 +87,9 @@ toDrill (id', streak, score, interval) =
 toFile :: (Int, FilePath, Text.Text) -> File
 toFile (drillId', name, body) = File {fileDrillId = drillId', fileName = name, fileBody = body}
 
+createTmpDir :: IO ()
+createTmpDir = createDirectoryIfMissing True tmpDir
+
 review :: Connection -> IO ()
 review conn = do
     drills <- getDue conn
@@ -94,7 +97,7 @@ review conn = do
     where
         reviewFiles [] = return ()
         reviewFiles files = do
-            createDirectory tmpDir
+            createTmpDir
             mapM_
                 ( \file -> do
                     let filename = tmpDir <> fileName file
