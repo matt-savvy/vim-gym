@@ -1,5 +1,6 @@
 # vim-gym
 
+[![asciicast](https://asciinema.org/a/lZ8iw0UE7D2BL3nOudT7z5MSo.svg)](https://asciinema.org/a/lZ8iw0UE7D2BL3nOudT7z5MSo)
 
 ## Building
 
