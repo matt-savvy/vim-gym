@@ -1,3 +1,4 @@
+import FilePathHelper
 import SM2 (Grade (..), applyScore)
 import Test.Hspec
 
@@ -16,3 +17,8 @@ main = hspec $ do
         it "incorrect" $ do
             let current = (Grade {streak = 3, score = 2.5, interval = 6})
             applyScore 1.0 current `shouldBe` (Grade {streak = 0, score = 1.96, interval = 1})
+    describe "FilePathHelper.split" $ do
+        it "splits at the last /" $ do
+            let (path, file) = ("/tmp/vim-gym/drills/quickfix/", "a.txt")
+            let filePath = path <> file
+            FilePathHelper.split filePath `shouldBe` (path, file)

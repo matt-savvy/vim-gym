@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      FilePathHelper
       Queries
       SM2
       UI
