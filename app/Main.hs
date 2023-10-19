@@ -89,6 +89,12 @@ toDrill (id', streak, score, interval, lastReviewed) =
     where
         lastReviewTime = parseTimeOrError True defaultTimeLocale "%Y-%-m-%-d" lastReviewed
 
+toDrillWithFilenames :: (Int, Int, Float, Int, String, String) -> (Drill, String)
+toDrillWithFilenames (id', streak, score, interval, lastReviewed, filenames) =
+    (drill, filenames)
+    where
+        drill = toDrill (id', streak, score, interval, lastReviewed)
+
 toFile :: (Int, FilePath, Text.Text) -> File
 toFile (drillId', name, body) = File {fileDrillId = drillId', fileName = name, fileBody = body}
 
@@ -160,10 +166,10 @@ status conn = do
     drillsDueCount <- getDrillsDueCount conn
     UI.showStatus drillsDueCount
 
-listDrills :: Connection -> IO [Drill]
+listDrills :: Connection -> IO [(Drill, String)]
 listDrills conn = do
     rows <- query_ conn Queries.listDrillsQuery
-    return $ map toDrill rows
+    return $ map toDrillWithFilenames rows
 
 list :: Connection -> IO ()
 list conn = do
