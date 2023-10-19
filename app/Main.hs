@@ -4,6 +4,7 @@ import Control.Monad (when)
 import qualified Data.Text as Text
 import qualified Data.Text.IO as TIO
 import Data.Time (Day (..), getCurrentTime, utctDay)
+import Data.Time.Format (defaultTimeLocale, parseTimeOrError)
 import Database.SQLite.Simple
 import qualified FilePathHelper
 import qualified Queries
@@ -75,15 +76,17 @@ getFiles conn drillId' = do
     fileRows <- query conn Queries.getFilesQuery (Only drillId')
     return $ map toFile fileRows
 
-toDrill :: (Int, Int, Float, Int) -> Drill
-toDrill (id', streak, score, interval) =
+toDrill :: (Int, Int, Float, Int, String) -> Drill
+toDrill (id', streak, score, interval, lastReviewed) =
     Drill
         { drillId = id'
         , drillStreak = streak
         , drillScore = score
         , drillInterval = interval
-        , drillLastReviewed = ModifiedJulianDay 0
+        , drillLastReviewed = lastReviewTime
         }
+    where
+        lastReviewTime = parseTimeOrError True defaultTimeLocale "%Y-%-m-%-d" lastReviewed
 
 toFile :: (Int, FilePath, Text.Text) -> File
 toFile (drillId', name, body) = File {fileDrillId = drillId', fileName = name, fileBody = body}

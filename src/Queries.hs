@@ -13,7 +13,7 @@ getDueCountQuery :: Query
 getDueCountQuery = "SELECT COUNT (id) FROM drills WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now');"
 
 getDueQuery :: Query
-getDueQuery = "SELECT id, streak, score, interval FROM drills WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now') LIMIT 1;"
+getDueQuery = "SELECT id, streak, score, interval, last_reviewed FROM drills WHERE datetime(last_reviewed, '+' || interval || ' day') <= datetime('now') LIMIT 1;"
 
 getFilesQuery :: Query
 getFilesQuery = "SELECT drill_id, filename, body FROM files WHERE drill_id = (?);"
