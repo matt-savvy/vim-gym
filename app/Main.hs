@@ -46,6 +46,7 @@ handleCommand (UI.AddDrill []) _conn = undefined
 handleCommand (UI.AddDrill filePaths) conn = addDrill filePaths conn
 handleCommand UI.Review conn = review conn
 handleCommand UI.Status conn = status conn
+handleCommand UI.List conn = list conn
 
 addDrill :: [FilePath] -> Connection -> IO ()
 addDrill filePaths conn = do
@@ -158,6 +159,16 @@ status :: Connection -> IO ()
 status conn = do
     drillsDueCount <- getDrillsDueCount conn
     UI.showStatus drillsDueCount
+
+listDrills :: Connection -> IO [Drill]
+listDrills conn = do
+    rows <- query_ conn Queries.listDrillsQuery
+    return $ map toDrill rows
+
+list :: Connection -> IO ()
+list conn = do
+    drills <- listDrills conn
+    UI.showDrills $ map (Text.pack . show) drills
 
 main :: IO ()
 main = do
