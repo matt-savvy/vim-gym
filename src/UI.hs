@@ -2,6 +2,7 @@ module UI (getContinue, getScore, Command (..), handleArgs, showStatus, showDril
 
 import Data.Text (Text, pack, toLower)
 import qualified Data.Text.IO as TIO
+import Drill (Drill)
 import Text.Read (readMaybe)
 
 getContinue :: IO Bool
@@ -54,8 +55,8 @@ showHelpText = TIO.putStrLn helpText
             \- 4 Correct response, after some hesitation.\n \
             \- 5 Correct response with perfect recall."
 
-showDrills :: [Text] -> IO ()
-showDrills drillsText = mapM_ TIO.putStrLn drillsText
+showDrills :: [(Drill, String)] -> IO ()
+showDrills drillsText = mapM_ (putStrLn . show) drillsText
 
 showStatus :: Int -> IO ()
 showStatus n = TIO.putStrLn $ "Drills due for review: " <> (pack . show) n

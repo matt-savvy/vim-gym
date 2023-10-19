@@ -153,7 +153,7 @@ listDrills conn = do
 list :: Connection -> IO ()
 list conn = do
     drills <- listDrills conn
-    UI.showDrills $ map (Text.pack . show) drills
+    UI.showDrills drills
 
 main :: IO ()
 main = do
