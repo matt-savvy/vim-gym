@@ -2,7 +2,7 @@ module UI (getContinue, getScore, Command (..), handleArgs, showStatus, showDril
 
 import Data.Text (Text, pack, toLower)
 import qualified Data.Text.IO as TIO
-import Drill (Drill)
+import Drill (Drill, drillId, drillLastReviewed, drillScore, drillStreak)
 import Text.Read (readMaybe)
 
 getContinue :: IO Bool
@@ -56,7 +56,24 @@ showHelpText = TIO.putStrLn helpText
             \- 5 Correct response with perfect recall."
 
 showDrills :: [(Drill, String)] -> IO ()
-showDrills drillsText = mapM_ (putStrLn . show) drillsText
+showDrills drillsText = do
+    putStrLn " id | streak | score | last reviwed | filenames "
+    putStrLn " ---|--------|-------|--------------|---------- "
+    mapM_ (putStrLn . drillString) drillsText
+    where
+        drillString (drill, filenames) =
+            mconcat
+                [ " "
+                , show (drillId drill)
+                , " |      "
+                , show (drillStreak drill)
+                , " | "
+                , show (drillScore drill)
+                , " | "
+                , show (drillLastReviewed drill)
+                , " | "
+                , filenames
+                ]
 
 showStatus :: Int -> IO ()
 showStatus n = TIO.putStrLn $ "Drills due for review: " <> (pack . show) n
