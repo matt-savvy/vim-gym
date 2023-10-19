@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Drill
       FilePathHelper
       Queries
       SM2

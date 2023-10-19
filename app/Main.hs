@@ -6,6 +6,7 @@ import qualified Data.Text.IO as TIO
 import Data.Time (Day (..), getCurrentTime, utctDay)
 import Data.Time.Format (defaultTimeLocale, parseTimeOrError)
 import Database.SQLite.Simple
+import Drill (Drill (..), initDrill)
 import qualified FilePathHelper
 import qualified Queries
 import qualified SM2
@@ -18,28 +19,6 @@ import qualified UI
 data File = File {fileDrillId :: Int, fileName :: FilePath, fileBody :: Text.Text} deriving (Show)
 instance ToRow File where
     toRow (File drillId' filename body) = toRow (drillId', filename, body)
-
-data Drill = Drill
-    { drillId :: Int
-    , drillStreak :: Int
-    , drillScore :: Float
-    , drillInterval :: Int
-    , drillLastReviewed :: Day
-    }
-    deriving (Show)
-
-instance ToRow Drill where
-    toRow (Drill _id streak score interval lastReviewed) = toRow (streak, score, interval, lastReviewed)
-
-initDrill :: Drill
-initDrill =
-    Drill
-        { drillId = 0
-        , drillStreak = 0
-        , drillScore = 2.5
-        , drillInterval = 1
-        , drillLastReviewed = ModifiedJulianDay 0
-        }
 
 handleCommand :: UI.Command -> Connection -> IO ()
 handleCommand (UI.AddDrill []) _conn = undefined
