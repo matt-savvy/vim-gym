@@ -74,7 +74,7 @@ showDrills drillsText = do
                         format
                         [ show (drillId drill)
                         , show (drillStreak drill)
-                        , show (drillScore drill)
+                        , show (round $ drillScore drill :: Int)
                         , show (drillLastReviewed drill)
                         ]
                         lengths
