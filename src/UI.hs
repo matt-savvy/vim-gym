@@ -1,5 +1,6 @@
 module UI (getContinue, getScore, Command (..), handleArgs, showStatus, showDrills) where
 
+import Data.List (intercalate)
 import Data.Text (Text, pack, toLower)
 import qualified Data.Text.IO as TIO
 import Drill (Drill, drillId, drillLastReviewed, drillScore, drillStreak)
@@ -57,23 +58,29 @@ showHelpText = TIO.putStrLn helpText
 
 showDrills :: [(Drill, String)] -> IO ()
 showDrills drillsText = do
-    putStrLn " id | streak | score | last reviwed | filenames "
-    putStrLn " ---|--------|-------|--------------|---------- "
+    putStrLn header
+    putStrLn subHeader
     mapM_ (putStrLn . drillString) drillsText
     where
+        lengths = [3, 7, 6, 14, 10]
+        format str n = lead (pad str n)
+        header = lead $ intercalate "|" (zipWith format ["id", "streak", "score", "last reviewed", "filenames"] lengths)
+        subHeader = lead $ intercalate "|" (map (\n -> replicate (n + 1) '-') lengths)
         drillString (drill, filenames) =
-            mconcat
-                [ " "
-                , show (drillId drill)
-                , " |      "
-                , show (drillStreak drill)
-                , " | "
-                , show (drillScore drill)
-                , " | "
-                , show (drillLastReviewed drill)
-                , " | "
-                , filenames
-                ]
+            lead $
+                intercalate
+                    "|"
+                    ( zipWith
+                        format
+                        [ show (drillId drill)
+                        , show (drillStreak drill)
+                        , show (drillScore drill)
+                        , show (drillLastReviewed drill)
+                        ]
+                        lengths
+                    )
+                    <> "| "
+                    <> filenames
 
 showStatus :: Int -> IO ()
 showStatus n = TIO.putStrLn $ "Drills due for review: " <> (pack . show) n
@@ -86,3 +93,9 @@ handleArgs ["review"] = Review
 handleArgs ["status"] = Status
 handleArgs ["list"] = List
 handleArgs _args = undefined
+
+lead :: String -> String
+lead str = " " <> str
+
+pad :: String -> Int -> String
+pad str len = take len (str <> repeat ' ')
