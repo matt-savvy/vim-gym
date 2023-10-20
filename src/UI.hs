@@ -62,9 +62,9 @@ showDrills drillsText = do
     putStrLn subHeader
     mapM_ (putStrLn . drillString) drillsText
     where
-        lengths = [3, 7, 6, 14, 10]
+        lengths = [3, 7, 6, 12, 10]
         format str n = lead (pad str n)
-        header = lead $ intercalate "|" (zipWith format ["id", "streak", "score", "last reviewed", "filenames"] lengths)
+        header = lead $ intercalate "|" (zipWith format ["id", "streak", "score", "last review", "filenames"] lengths)
         subHeader = lead $ intercalate "|" (map (\n -> replicate (n + 1) '-') lengths)
         drillString (drill, filenames) =
             lead $
