@@ -90,6 +90,7 @@ data Command = AddDrill [FilePath] | Review | ReviewManual Int | Status | List d
 handleArgs :: [String] -> Command
 handleArgs ("add" : filePaths) = AddDrill filePaths
 handleArgs ["review"] = Review
+handleArgs ["review", drillId'] = ReviewManual (read drillId')
 handleArgs ["status"] = Status
 handleArgs ["list"] = List
 handleArgs _args = undefined
