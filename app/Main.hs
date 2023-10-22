@@ -24,6 +24,7 @@ handleCommand :: UI.Command -> Connection -> IO ()
 handleCommand (UI.AddDrill []) _conn = undefined
 handleCommand (UI.AddDrill filePaths) conn = addDrill filePaths conn
 handleCommand UI.Review conn = review conn
+handleCommand (UI.ReviewManual drillId') conn = reviewManual conn drillId'
 handleCommand UI.Status conn = status conn
 handleCommand UI.List conn = list conn
 
@@ -127,6 +128,14 @@ reviewDrill conn drill = do
             let filenames = map (\file -> tmpDir <> fileName file) files
             callCommand $ vimCommand filenames
             removeDirectoryRecursive tmpDir
+
+reviewManual :: Connection -> Int -> IO ()
+reviewManual conn drillId' = do
+    drill <- getDrill conn drillId'
+    maybeReviewDrill drill
+    where
+        maybeReviewDrill Nothing = putStrLn "No drill found"
+        maybeReviewDrill (Just drill') = reviewDrill conn drill'
 
 tmpDir :: String
 tmpDir = "/tmp/vim-gym/"

@@ -85,7 +85,7 @@ showDrills drillsText = do
 showStatus :: Int -> IO ()
 showStatus n = TIO.putStrLn $ "Drills due for review: " <> (pack . show) n
 
-data Command = AddDrill [FilePath] | Review | Status | List deriving (Show)
+data Command = AddDrill [FilePath] | Review | ReviewManual Int | Status | List deriving (Show)
 
 handleArgs :: [String] -> Command
 handleArgs ("add" : filePaths) = AddDrill filePaths
