@@ -85,6 +85,26 @@ review conn = do
     drills <- getDue conn
     review' drills
     where
+        review' [] = putStrLn "Nothing left to review."
+        review' (drill : _rest) = do
+            reviewDrill conn drill
+            drills <- getDue conn
+            continue drills
+        continue [] = review' []
+        continue drills = do
+            willContinue <- UI.getContinue
+            when willContinue $ review' drills
+
+reviewDrill :: Connection -> Drill -> IO ()
+reviewDrill conn drill = do
+    files <- getFiles conn (drillId drill)
+    reviewFiles files
+    newScore <- UI.getScore
+    currentDay <- getCurrentDay
+    let newDrill' = applySM2Grade drill (SM2.applyScore (fromIntegral newScore) (toSM2Grade drill))
+    let newDrill = newDrill' {drillLastReviewed = currentDay}
+    execute conn Queries.updateDrillQuery (drillStreak newDrill, drillScore newDrill, drillInterval newDrill, drillLastReviewed newDrill, drillId newDrill)
+    where
         reviewFiles [] = return ()
         reviewFiles files = do
             createTmpDir
@@ -99,21 +119,6 @@ review conn = do
             let filenames = map (\file -> tmpDir <> fileName file) files
             callCommand $ vimCommand filenames
             removeDirectoryRecursive tmpDir
-        review' [] = putStrLn "Nothing left to review."
-        review' (drill : _rest) = do
-            files <- getFiles conn (drillId drill)
-            reviewFiles files
-            newScore <- UI.getScore
-            currentDay <- getCurrentDay
-            let newDrill' = applySM2Grade drill (SM2.applyScore (fromIntegral newScore) (toSM2Grade drill))
-            let newDrill = newDrill' {drillLastReviewed = currentDay}
-            execute conn Queries.updateDrillQuery (drillStreak newDrill, drillScore newDrill, drillInterval newDrill, drillLastReviewed newDrill, drillId newDrill)
-            drills <- getDue conn
-            continue drills
-        continue [] = review' []
-        continue drills = do
-            willContinue <- UI.getContinue
-            when willContinue $ review' drills
 
 tmpDir :: String
 tmpDir = "/tmp/vim-gym/"
