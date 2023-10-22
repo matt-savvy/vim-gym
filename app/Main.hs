@@ -46,6 +46,14 @@ addDrill filePaths conn = do
                     execute conn Queries.insertFileQuery file
                 )
 
+getDrill :: Connection -> Int -> IO (Maybe Drill)
+getDrill conn drillId' = do
+    drillRows <- query conn Queries.getDrillQuery (Only drillId')
+    let drills = map toDrill drillRows
+    return $ case drills of
+        [] -> Nothing
+        (drill : _rest) -> Just drill
+
 getDue :: Connection -> IO [Drill]
 getDue conn = do
     drillRows <- query_ conn Queries.getDueQuery
