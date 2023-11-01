@@ -144,9 +144,7 @@ tmpDir = "/tmp/vim-gym/"
 
 getVim :: IO String
 getVim = do
-    maybeVim <- lookupEnv "VIM_COMMAND"
-    let vim = fromMaybe "vim" maybeVim
-    return vim
+    fromMaybe "vim" <$> lookupEnv "VIM_COMMAND"
 
 toSM2Grade :: Drill -> SM2.Grade
 toSM2Grade drill =
