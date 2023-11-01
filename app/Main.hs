@@ -126,7 +126,8 @@ reviewDrill conn drill = do
                 )
                 files
             let filenames = map (\file -> tmpDir <> fileName file) files
-            callCommand $ vimCommand filenames
+            vim <- getVim
+            callCommand $ vimCommand vim filenames
             removeDirectoryRecursive tmpDir
 
 reviewManual :: Connection -> Int -> IO ()
@@ -140,6 +141,10 @@ reviewManual conn drillId' = do
 tmpDir :: String
 tmpDir = "/tmp/vim-gym/"
 
+getVim :: IO (String)
+getVim =
+    return $ "vim"
+
 toSM2Grade :: Drill -> SM2.Grade
 toSM2Grade drill =
     SM2.Grade (drillStreak drill) (drillScore drill) (drillInterval drill)
@@ -152,11 +157,8 @@ getCurrentDay :: IO Day
 getCurrentDay = do
     utctDay <$> getCurrentTime
 
-vimCommand :: [FilePath] -> String
-vimCommand filePaths =
-    let
-        vim = "vim"
-    in
+vimCommand :: String -> [FilePath] -> String
+vimCommand vim filePaths =
     unwords $ ["(", "cd", tmpDir, ";", vim] <> filePaths <> [")"]
 
 getDrillsDueCount :: Connection -> IO Int
