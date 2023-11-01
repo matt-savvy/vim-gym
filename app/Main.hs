@@ -154,7 +154,10 @@ getCurrentDay = do
 
 vimCommand :: [FilePath] -> String
 vimCommand filePaths =
-    unwords $ ["(", "cd", tmpDir, ";", "vim"] <> filePaths <> [")"]
+    let
+        vim = "vim"
+    in
+    unwords $ ["(", "cd", tmpDir, ";", vim] <> filePaths <> [")"]
 
 getDrillsDueCount :: Connection -> IO Int
 getDrillsDueCount conn = do
