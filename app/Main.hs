@@ -1,6 +1,7 @@
 module Main (main) where
 
 import Control.Monad (when)
+import Data.Maybe (fromMaybe)
 import qualified Data.Text as Text
 import qualified Data.Text.IO as TIO
 import Data.Time (Day (..), getCurrentTime, utctDay)
@@ -11,7 +12,7 @@ import qualified FilePathHelper
 import qualified Queries
 import qualified SM2
 import System.Directory (createDirectoryIfMissing, removeDirectoryRecursive)
-import System.Environment (getArgs)
+import System.Environment (getArgs, lookupEnv)
 import System.IO (IOMode (..), withFile)
 import System.Process
 import qualified UI
@@ -141,9 +142,11 @@ reviewManual conn drillId' = do
 tmpDir :: String
 tmpDir = "/tmp/vim-gym/"
 
-getVim :: IO (String)
-getVim =
-    return $ "vim"
+getVim :: IO String
+getVim = do
+    maybeVim <- lookupEnv "VIM_COMMAND"
+    let vim = fromMaybe "vim" maybeVim
+    return vim
 
 toSM2Grade :: Drill -> SM2.Grade
 toSM2Grade drill =
