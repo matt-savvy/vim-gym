@@ -60,3 +60,19 @@ This will open the drill in vim. Make your edits and then exit.
 You will be prompted to enter a score from 0-5. Enter `?` to learn more.
 
 vim-gym will use your score to determine when to schedule this drill for the next review.
+
+#### `VIM_COMMAND`
+
+By default, this will open using `vim` but this can be overridden by setting `VIM_COMMAND` in your env.
+
+Some examples:
+
+- Use Neovim if you don't have this aliased to `vim`.
+```
+VIM_COMMAND=nvim vim-gym-exe review
+```
+
+- Use vim without loading your normal config.
+```
+VIM_COMMAND="vim -u none" vim-gym-exe review
+```
