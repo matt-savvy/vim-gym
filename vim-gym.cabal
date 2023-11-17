@@ -1,17 +1,17 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.35.2.
+-- This file has been generated from package.yaml by hpack version 0.36.0.
 --
 -- see: https://github.com/sol/hpack
 
 name:           vim-gym
 version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/githubuser/vim-gym#readme>
-homepage:       https://github.com/githubuser/vim-gym#readme
-bug-reports:    https://github.com/githubuser/vim-gym/issues
-author:         Author name here
-maintainer:     example@example.com
-copyright:      2023 Author name here
+description:    Please see the README on GitHub at <https://github.com/matt-savvy/vim-gym#readme>
+homepage:       https://github.com/matt-savvy/vim-gym#readme
+bug-reports:    https://github.com/matt-savvy/vim-gym/issues
+author:         Matt Savoia
+maintainer:     matt@1-800-rad-dude.com
+copyright:      2023 Matt Savoia
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -21,7 +21,7 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/githubuser/vim-gym
+  location: https://github.com/matt-savvy/vim-gym
 
 library
   exposed-modules:
