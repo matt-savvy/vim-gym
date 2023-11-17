@@ -3,6 +3,8 @@ name: Release
 on:
   # Trigger the workflow on the new v* tag created
   push:
+  push:
+    branches: [ "master" ]
     tags:
       - "v*"
 
@@ -16,7 +18,7 @@ jobs:
 
       - name: Create Release
         id: create_release
-        uses: actions/create-release@v1
+        uses: elgohr/Github-Release-Action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # provided by actions, no need to add our own token
         with:
